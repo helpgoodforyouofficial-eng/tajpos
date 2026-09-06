@@ -866,30 +866,30 @@ document.addEventListener("DOMContentLoaded", function() {
 })();
 
 // ==========================================
-// 🛡️ --- SECURITY & ANTI-TAMPER BLOCK ---
-// ==========================================
+    // 🛡️ --- SECURITY & ANTI-TAMPER BLOCK ---
+    // ==========================================
 
-// 1. 🚫 INSPECT ELEMENT & RIGHT CLICK BLOCKER
-document.addEventListener('contextmenu', event => event.preventDefault());
+    // 1. 🚫 INSPECT ELEMENT & RIGHT CLICK BLOCKER
+    document.addEventListener('contextmenu', event => event.preventDefault());
 
-document.onkeydown = function(e) {
-    if (e.keyCode == 123) return false; // F12
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
-    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
-};
+    document.onkeydown = function(e) {
+        if (e.keyCode == 123) return false; // F12
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+        if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+    };
 
-// 2. ⚠️ CODE INTEGRITY VERIFICATION
-(function() {
-    const INTEGRITY_CHECK_ENABLED = false; // true = security check ON
-    const CORRECT_HASH_SIGNATURE = 13011;
+    // 2. ⚠️ CODE INTEGRITY VERIFICATION
+    (function() {
+        const INTEGRITY_CHECK_ENABLED = true; 
+        const CORRECT_HASH_SIGNATURE = 12678; 
 
-    const enforceSecurityLock = () => {
-        if (!INTEGRITY_CHECK_ENABLED) return;
-        try {
-            let currentStrippedSource = '';
+        const enforceSecurityLock = () => {
+            if (!INTEGRITY_CHECK_ENABLED) return;
+            try {
+                let currentStrippedSource = '';
 
-            const safeFunctions = [];
+                const safeFunctions = [];
             if (typeof calc !== 'undefined') safeFunctions.push(calc);
             if (typeof addRow !== 'undefined') safeFunctions.push(addRow);
             if (typeof reIndex !== 'undefined') safeFunctions.push(reIndex);
@@ -908,34 +908,33 @@ document.onkeydown = function(e) {
             if (typeof showDevModal !== 'undefined') safeFunctions.push(showDevModal);
             if (typeof handleCurrencyChange !== 'undefined') safeFunctions.push(handleCurrencyChange);
             if (typeof updateCurrencySymbol !== 'undefined') safeFunctions.push(updateCurrencySymbol);
+                safeFunctions.forEach(fn => {
+                    currentStrippedSource += fn.toString().replace(/\s+/g,'');
+                });
 
-            safeFunctions.forEach(fn => {
-                currentStrippedSource += fn.toString().replace(/\s+/g,'');
-            });
-
-            const currentLength = currentStrippedSource.length;
-
-            if (currentLength !== CORRECT_HASH_SIGNATURE) {
-                document.body.innerHTML = `
-                    <div style="position:fixed; top:0; left:0; width:100vw; height:100vh; background-color:#7f1d1d; color:#ffffff; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:sans-serif; padding:20px; text-align:center; z-index:999999;">
-                        <h1 style="font-size:42px; margin-bottom:20px;">⚠️ CODE TAMPERING DETECTED</h1>
-                        <p style="font-size:18px; max-width:600px; line-height:1.6; margin-bottom:20px;">
-                            Unauthorized modifications to the original source code or the developer's intellectual property have been detected.
-                        </p>
-                        <p style="font-size:16px; color:#f3f4f6; margin-bottom:30px;">
-                            Please contact <strong>Wasi Developers</strong> on WhatsApp:
-                            <a href="https://wa.me/923346800959" target="_blank" style="color:#22c55e; font-weight:bold; text-decoration:underline; margin-left:5px;">+923346800959</a>
-                        </p>
-                        <div style="background:#000; padding:15px; border-radius:5px; font-family:monospace; font-size:14px; color:#ef4444;">
-                            Error Code: ERR_AUTH_INTEGRITY_VIOLATION
+                const currentLength = currentStrippedSource.length;
+                 alert("New Code Length is: " + currentLength);
+                if (currentLength !== CORRECT_HASH_SIGNATURE) {
+                    document.body.innerHTML = `
+                        <div style="position:fixed; top:0; left:0; width:100vw; height:100vh; background-color:#7f1d1d; color:#ffffff; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:sans-serif; padding:20px; text-align:center; z-index:999999;">
+                            <h1 style="font-size:42px; margin-bottom:20px;">⚠️ CODE TAMPERING DETECTED</h1>
+                            <p style="font-size:18px; max-width:600px; line-height:1.6; margin-bottom:20px;">
+                                Unauthorized modifications to the original source code or the developer's intellectual property have been detected.
+                            </p>
+                            <p style="font-size:16px; color:#f3f4f6; margin-bottom:30px;">
+                                Please contact <strong>Wasi Developers</strong> on WhatsApp:
+                                <a href="https://wa.me/923346800959" target="_blank" style="color:#22c55e; font-weight:bold; text-decoration:underline; margin-left:5px;">+923346800959</a>
+                            </p>
+                            <div style="background:#000; padding:15px; border-radius:5px; font-family:monospace; font-size:14px; color:#ef4444;">
+                                Error Code: ERR_AUTH_INTEGRITY_VIOLATION
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
+            } catch(e) {
+                document.body.innerHTML = "Security system bypassed. Access Denied. Contact Wasi Developers at +923346800959.";
             }
-        } catch(e) {
-            document.body.innerHTML = "Security system bypassed. Access Denied. Contact Wasi Developers at +923346800959.";
-        }
-    };
+        };
 
-    setTimeout(enforceSecurityLock, 0);
-})();
+        setTimeout(enforceSecurityLock, 0);
+    })();
