@@ -913,7 +913,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
 
                 const currentLength = currentStrippedSource.length;
-                 alert("New Code Length is: " + currentLength);
+                  //  alert("New Code Length is: " + currentLength);
                 if (currentLength !== CORRECT_HASH_SIGNATURE) {
                     document.body.innerHTML = `
                         <div style="position:fixed; top:0; left:0; width:100vw; height:100vh; background-color:#7f1d1d; color:#ffffff; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:sans-serif; padding:20px; text-align:center; z-index:999999;">
