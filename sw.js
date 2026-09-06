@@ -1,7 +1,12 @@
-const CACHE_NAME = 'bill-gen-v16'; // Version ko v10 kar diya
+const CACHE_NAME = 'bill-gen-v17'; //  v18  v19
 const ASSETS = [
+  './',
   'index.html',
   'manifest.json',
+  'style.css',
+  'script.js',        //  YE ADD KAREIN — offline ka asli hero
+  'icon-192.png',     //  (agar file hai)
+  'icon-512.png',     //  (agar file hai)
   'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
@@ -12,11 +17,11 @@ self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS);
-    }).then(() => self.skipWaiting()) // Naye service worker ko furan active karega
+    }).then(() => self.skipWaiting())
   );
 });
 
-// 2. Clear old caches on activate (Is se v10 furan show hoga!)
+// 2. Clear old caches on activate
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
@@ -32,7 +37,7 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// 3. Network first, fallback to cache
+// 3. Network first, fallback to cache (Online = fresh, Offline = cache)
 self.addEventListener('fetch', (e) => {
   e.respondWith(
     fetch(e.request).catch(() => {
