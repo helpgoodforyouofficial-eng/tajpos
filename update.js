@@ -20,7 +20,13 @@
             badgePrefix: "Notification:",
             content: `
                 <p><strong>Hello!</strong> We have made several key updates to improve your experience:</p>
-                <ul>
+                    <ul>
+    <li><strong>Dual Language Bills:</strong> Previously, bills could only be created in English. Now, you can easily generate bills in both English and Urdu!</li>
+    <li><strong>Layout Direction Switcher:</strong> To convert a bill from English to Urdu (or vice versa), simply use the "Layout Direction" toggle option at the top of the page.</li>
+    <li><strong>Customizable Owner Details:</strong> Added Owner Name functionality! You can now edit the Owner Name as well as customize the "Owner" label text according to your business needs.</li>
+    <li><strong>RTL & Print Fixes:</strong> Perfected text alignment for image downloads (JPG) and PDF printing in Urdu mode.</li>
+
+
                     <li><strong>RTL/Urdu Alignment Fix:</strong> Text alignment during image download (JPG) and WhatsApp sharing now stays strictly on the right side.</li>
                     <li><strong>Print Layout Optimization:</strong> Resolved gaps in the metadata column (Date, Time, NTN) during print mode.</li>
                     <li><strong>Shift Control for Metadata:</strong> Precision pixel-by-pixel controls added for NTN and Bill No labels.</li>
@@ -38,6 +44,12 @@
             content: `
                 <p><strong>السلام علیکم!</strong> ہم نے ایپلیکیشن میں درج ذیل اہم بہتری کی ہے:</p>
                 <ul>
+    <li><strong>انگلش اور اردو بلز:</strong> پہلے بل صرف انگلش میں بنتے تھے، اب آپ انگلش اور اردو دونوں زبانوں میں آسانی سے بل بنا سکتے ہیں۔</li>
+    <li><strong>زبان تبدیل کرنے کا طریقہ:</strong> انگلش سے اردو یا اردو سے انگلش بل تبدیل کرنے کے لیے صفحے کے سب سے اوپر موجود "Layout Direction" کے آپشن کا استعمال کریں۔</li>
+    <li><strong>آنر نیم کی سہولت (Owner Name):</strong> اب آپ اپنے کاروبار کے لحاظ سے آنر کا نام اور لفظ "Owner" (لیبل) کو اپنی مرضی سے ایڈٹ اور تبدیل کر سکتے ہیں۔</li>
+    <li><strong>پرنٹ اور امیج الائنمنٹ فکس:</strong> تصویر (JPG) ڈاؤن لوڈ کرنے اور پرنٹ نکالنے کے دوران اردو الائنمنٹ کو بالکل پرفیکٹ کر دیا گیا ہے۔</li>
+
+                
                     <li><strong>RTL/Urdu Alignment Fix:</strong> تصویر (JPG) سیو کرتے وقت اور WhatsApp پر شیئر کرتے وقت ٹیکسٹ اب بالکل دائیں (Right) طرف ہی رہے گا۔</li>
                     <li><strong>Print Layout Optimization:</strong> پرنٹ نکالتے وقت میٹا کالم (Date, Time, NTN) کے درمیانی فاصلے (Gaps) کو بالکل فکس کر دیا گیا ہے۔</li>
                     <li><strong>Meta Column Shift Control:</strong> NTN اور بل نمبر کے لیبلز اور ہندسوں کو اب آپ پکسل بائی پکسل ایڈجسٹ کر سکتے ہیں۔</li>
