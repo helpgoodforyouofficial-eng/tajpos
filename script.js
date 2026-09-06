@@ -286,7 +286,7 @@ function toggleDirection(dir) {
     const disclaimer = billContainer.querySelector('.no-challenge-disclaimer');
     if (disclaimer) {
         disclaimer.innerHTML = isUrdu
-            ? "یہ مرشد ٹریڈرز کا ای-بل قانونی حیثیت نہیں رکھتا۔ <br>کسی عدالت میں پیش نہیں کیا جا سکتا۔"
+            ? "یہ فری بلز کا ای-بل قانونی حیثیت نہیں رکھتا۔ <br>کسی عدالت میں پیش نہیں کیا جا سکتا۔"
             : "This Free Bills E-Bill: Not legally binding. <br>Cannot be challenged in any court.";
     }
 
