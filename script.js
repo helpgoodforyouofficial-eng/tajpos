@@ -1,3 +1,12 @@
+// ============================================
+// 📊 GOOGLE ANALYTICS CONFIG
+// ============================================
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'AW-1084371XXXX');
+gtag('config', 'G-MM1128NLL1');
+
 // --- PWA Service Worker Registration & Prompt Logic ---
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -9,22 +18,19 @@ if ('serviceWorker' in navigator) {
 
 let deferredPrompt;
 
-// 1. Jab browser install karne ke liye ready ho
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    
     const installBanner = document.getElementById('pwa-install-btn');
     if (installBanner) {
-        installBanner.style.setProperty('display', 'flex', 'important'); 
+        installBanner.style.setProperty('display', 'flex', 'important');
     }
 });
 
-// 2. Click handle karne ke liye jab page poora tayyar ho jaye
 document.addEventListener("DOMContentLoaded", function() {
     const actualBtn = document.getElementById('pwa-actual-install-click');
     const installBanner = document.getElementById('pwa-install-btn');
-    
+
     if (actualBtn) {
         actualBtn.addEventListener('click', async () => {
             if (!deferredPrompt) return;
@@ -37,7 +43,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
-// 3. Jab app successfully install ho jaye
 window.addEventListener('appinstalled', (evt) => {
     console.log('PWA was successfully installed!');
     const installBanner = document.getElementById('pwa-install-btn');
@@ -51,17 +56,93 @@ let savedItems = JSON.parse(localStorage.getItem("inventory")) || [];
 let savedCustomers = JSON.parse(localStorage.getItem("customer_profiles")) || [{"name": "Counter Sale", "address": "#"}];
 let savedBillsLog = JSON.parse(localStorage.getItem("bills_history_log")) || [];
 
+// NOTE DEFAULT TEXTS (English + Urdu dono)
+const NOTE_TEXTS = {
+    en: "1. Please clear the bill amount within 7 days.\n2. Kindly check the expiry of the items on the spot.\n3. The distribution is not responsible for any personal transactions with the salesman.\n4. For expired items claim, please inform us 1 month in advance.",
+    ur: "1. براہ کرم بل کی رقم 7 دنوں کے اندر ادا کریں۔\n2. براہ کرم سامان کی تاریخِ انقضا فوراً چیک کر لیں۔\n3. سیلزمین کے ساتھ کسی ذاتی لین دین کی ذمہ داری ڈسٹری بیوشن پر نہیں ہوگی۔\n4. ایکسپائرڈ اشیاء کے دعوے کے لیے ہمیں ایک ماہ پہلے اطلاع دیں۔"
+};
+
+// 🆕 v74: OWNER LABEL DEFAULTS (English = Owner, Urdu = اونر)
+const OWNER_DEFAULTS = { en: 'Owner', ur: 'اونر' };
+
+let currentLang = 'ltr';
+
+// SAVED LANGUAGE LOAD (Refresh ke baad wohi language rahegi)
+(function initLanguage() {
+    const saved = localStorage.getItem('app_language');
+    if (saved === 'rtl' || saved === 'ltr') currentLang = saved;
+    const selectEl = document.getElementById('layoutDirection');
+    if (selectEl) selectEl.value = currentLang;
+})();
+
+// RTL mode me customer-info right align (mobile CSS override)
+(function injectRTLStyle() {
+    const s = document.createElement('style');
+    s.textContent = '[dir="rtl"] .customer-info-wrap, [dir="rtl"] .customer-info-wrap * { text-align: right !important; }';
+    document.head.appendChild(s);
+})();
+
+// Date & Time Auto-Set Function
+function setDateTime() {
+    const d = document.getElementById('date-field');
+    const t = document.getElementById('time-field');
+    if (d) d.valueAsDate = new Date();
+    if (t) t.value = new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+}
+setDateTime(); // App open hote hi date/time set
+
+// SAFE TEXT REPLACER (Sirf text nodes badalta hai — listeners destroy NAHI hote)
+function replaceTexts(root, pairs) {
+    if (!root) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+    let node;
+    while ((node = walker.nextNode())) {
+        let txt = node.nodeValue;
+        let newTxt = txt;
+        pairs.forEach(p => { newTxt = newTxt.split(p[0]).join(p[1]); });
+        if (newTxt !== txt) node.nodeValue = newTxt;
+    }
+}
+
+// 🆕 v74: OWNER LABEL / NAME & NTN LOAD (Per-language label save support)
+function getOwnerLabelKey() {
+    return (currentLang === 'rtl') ? 'owner_label_ur' : 'owner_label_en';
+}
+
+function loadOwnerFields() {
+    const labelEl = document.getElementById('owner-label');
+    const nameEl = document.getElementById('owner-name-field');
+    const ntnEl = document.getElementById('ntn-field');
+
+    if (labelEl) {
+        const saved = localStorage.getItem(getOwnerLabelKey());
+        // Agar user ne label likha hua hai (CEO/مالک/اونر) to wohi load hoga, warna default
+        labelEl.innerText = (saved !== null && saved.trim() !== '')
+            ? saved
+            : (currentLang === 'rtl' ? OWNER_DEFAULTS.ur : OWNER_DEFAULTS.en);
+    }
+    if (nameEl) {
+        const savedName = localStorage.getItem('owner_name_value');
+        if (savedName !== null) nameEl.innerText = savedName;
+    }
+    if (ntnEl) {
+        const savedNTN = localStorage.getItem('ntn_value');
+        if (savedNTN !== null) ntnEl.innerText = savedNTN;
+    }
+}
+
 // --- Functions ---
 function syncPaperSize(val) {
     const pageSizeEl = document.getElementById('pageSize');
     const topCustomDimsEl = document.getElementById('topCustomDims');
     const customDimsEl = document.getElementById('customDims');
-    
+
     if(pageSizeEl) pageSizeEl.value = val;
     if(topCustomDimsEl) topCustomDimsEl.style.display = val === 'custom' ? 'inline-block' : 'none';
     if(customDimsEl) customDimsEl.style.display = val === 'custom' ? 'block' : 'none';
 }
 
+// QR Code Initialization
 if(document.getElementById("qrcode")) {
     (function(siteUrl){
         new QRCode(document.getElementById("qrcode"), { text: siteUrl, width: 60, height: 60 });
@@ -73,6 +154,144 @@ function updateTitleSize(sizeValue){
     if(mainTitleEl) {
         mainTitleEl.className = "biz-name " + sizeValue;
     }
+}
+
+// 🌐 Dynamic Language & Direction Switcher
+function toggleDirection(dir) {
+    currentLang = dir;
+
+    // Language ko localStorage me SAVE karo
+    localStorage.setItem('app_language', dir);
+    const selectEl = document.getElementById('layoutDirection');
+    if (selectEl) selectEl.value = dir;
+
+    const billContainer = document.getElementById('bill-content');
+    if (!billContainer) return;
+
+    const isUrdu = (dir === 'rtl');
+
+    billContainer.setAttribute('dir', dir);
+    billContainer.style.textAlign = isUrdu ? 'right' : 'left';
+
+    // Business Address Label
+    const bizAddrLabel = document.getElementById('biz-addr-label');
+    if (bizAddrLabel) bizAddrLabel.innerText = isUrdu ? 'پتہ:' : 'Address:';
+
+    // Mobile Label
+    const bizMobileLabel = document.getElementById('biz-mobile-label') ||
+                           document.getElementById('mobile-label') ||
+                           document.getElementById('biz-phone-label');
+    if (bizMobileLabel) bizMobileLabel.innerText = isUrdu ? 'موبائل:' : 'Mobile:';
+
+    // 🆕 v74: Owner Label load (saved label ya default — har language apna yaad rakhti hai)
+    loadOwnerFields();
+
+    // SAFE Label Translation
+    const pairs = isUrdu ? [
+        ["Customer:", "گاہک کا نام:"],
+        ["Address:", "پتہ:"],
+        ["Date:", "تاریخ:"],
+        ["Time:", "وقت:"],
+        ["Bill No:", "بل نمبر:"],
+        ["Note / Terms:", "نوٹ / شرائط:"]
+    ] : [
+        ["گاہک کا نام:", "Customer:"],
+        ["پتہ:", "Address:"],
+        ["تاریخ:", "Date:"],
+        ["وقت:", "Time:"],
+        ["بل نمبر:", "Bill No:"],
+        ["نوٹ / شرائط:", "Note / Terms:"]
+    ];
+    replaceTexts(billContainer, pairs);
+
+    // Customer Name & Address fields ka direction (RTL/LTR + cursor)
+    const custNameField = document.getElementById('cust-name-field');
+    const custAddrField = document.getElementById('cust-address-field');
+    if (custNameField) {
+        custNameField.setAttribute('dir', isUrdu ? 'rtl' : 'ltr');
+        custNameField.style.direction = isUrdu ? 'rtl' : 'ltr';
+        custNameField.style.removeProperty('text-align');
+        custNameField.style.setProperty('text-align', isUrdu ? 'right' : 'left');
+    }
+    if (custAddrField) {
+        custAddrField.setAttribute('dir', isUrdu ? 'rtl' : 'ltr');
+        custAddrField.style.direction = isUrdu ? 'rtl' : 'ltr';
+        custAddrField.style.removeProperty('text-align');
+        custAddrField.style.setProperty('text-align', isUrdu ? 'right' : 'left');
+    }
+
+    // Note Box — Content + Direction per language
+    const noteBody = document.getElementById('note-body');
+    if (noteBody) {
+        const noteKey = isUrdu ? 'custom_invoice_note_ur' : 'custom_invoice_note_en';
+        let noteTxt = localStorage.getItem(noteKey);
+        if (noteTxt === null && !isUrdu) {
+            const legacy = localStorage.getItem('custom_invoice_note');
+            noteTxt = (legacy !== null) ? legacy : NOTE_TEXTS.en;
+        } else if (noteTxt === null) {
+            noteTxt = NOTE_TEXTS.ur;
+        }
+        noteBody.innerText = noteTxt;
+        noteBody.setAttribute('dir', isUrdu ? 'rtl' : 'ltr');
+        noteBody.style.direction = isUrdu ? 'rtl' : 'ltr';
+        noteBody.style.removeProperty('text-align');
+        noteBody.style.setProperty('text-align', isUrdu ? 'right' : 'left');
+    }
+
+    // Default Customer Name
+    const custNameDef = document.getElementById('cust-name-field');
+    if (custNameDef && (custNameDef.innerText.trim() === "Counter Sale" || custNameDef.innerText.trim() === "کاؤنٹر سیل")) {
+        custNameDef.innerText = isUrdu ? "کاؤنٹر سیل" : "Counter Sale";
+    }
+
+    // Invoice Title
+    const invH1 = billContainer.querySelector('h1');
+    if (invH1) invH1.innerText = isUrdu ? "بل / انوائس" : "INVOICE";
+
+    // Table Headers
+    const ths = billContainer.querySelectorAll('table thead th');
+    if (ths.length >= 6) {
+        ths[0].innerText = isUrdu ? "نمبر" : "#";
+        ths[1].innerText = isUrdu ? "تفصیلِ سامان" : "Description";
+        ths[2].innerText = isUrdu ? "تعداد" : "Qty";
+        ths[3].innerText = isUrdu ? "قیمت" : "Rate";
+        ths[4].innerText = isUrdu ? "رعایت" : "Disc";
+        ths[5].innerText = isUrdu ? "کل قیمت" : "Total";
+    }
+
+    // Add Button & Placeholders
+    const btnAdd = document.querySelector('.btn-add');
+    if (btnAdd) btnAdd.innerText = isUrdu ? "+ نیا آئٹم شامل کریں" : "+ Add New Item";
+
+    document.querySelectorAll('.item-input').forEach(inp => {
+        inp.placeholder = isUrdu ? "آئٹم کا نام..." : "Item Name...";
+    });
+
+    // Totals Table
+    const sumTable = document.querySelector('.sum-table');
+    if (sumTable) {
+        const rows = sumTable.querySelectorAll('tr');
+        if (rows[0]) rows[0].cells[0].innerText = isUrdu ? "ٹوٹل رقم:" : "Sub Total:";
+        if (rows[1]) rows[1].cells[0].innerText = isUrdu ? "رعایت (ڈسکاؤنٹ):" : "Discount:";
+        if (rows[3]) rows[3].cells[0].innerText = isUrdu ? "کل واجب الادا:" : "Grand Total:";
+        if (rows[4]) rows[4].cells[0].innerText = isUrdu ? "سابقہ بقایا:" : "Previous Balance:";
+        if (rows[5]) rows[5].cells[0].innerText = isUrdu ? "وصول شدہ:" : "Received:";
+        if (rows[6]) rows[6].cells[0].innerText = isUrdu ? "کل بقایا رقم:" : "Total Pending Balance:";
+    }
+
+    // Footer Signature & Disclaimer
+    const sigDiv = billContainer.querySelector('.footer-area div[style*="border-top"]');
+    if (sigDiv) sigDiv.innerText = isUrdu ? "دستخط" : "Signature";
+
+    const disclaimer = billContainer.querySelector('.no-challenge-disclaimer');
+    if (disclaimer) {
+        disclaimer.innerHTML = isUrdu
+            ? "یہ مرشد ٹریڈرز کا ای-بل قانونی حیثیت نہیں رکھتا۔ <br>کسی عدالت میں پیش نہیں کیا جا سکتا۔"
+            : "This Murshid Traders E-Bill: Not legally binding. <br>Cannot be challenged in any court.";
+    }
+
+    // Language change par bhi Date & Time fresh set
+    setDateTime();
 }
 
 function updateCurrencySymbol(symbol) {
@@ -100,11 +319,13 @@ function addRow() {
     const tr = document.createElement('tr');
     const rowCount = tbody.rows.length + 1;
 
+    const placeholderText = (typeof currentLang !== 'undefined' && currentLang === 'rtl') ? 'آئٹم کا نام...' : 'Item Name...';
+
     tr.innerHTML = `
         <td>${rowCount}</td>
         <td>
             <div class="editable-input-container">
-                <input type="text" placeholder="Item Name..." class="item-input" autocomplete="off">
+                <input type="text" placeholder="${placeholderText}" class="item-input" autocomplete="off">
             </div>
             <div class="suggestion-container"></div>
         </td>
@@ -115,9 +336,9 @@ function addRow() {
         <td class="no-print rt-col-action">
             <button class="delete-btn" onclick="this.parentElement.parentElement.remove(); reIndex(); calc();">✖</button>
         </td>`;
-    
+
     tbody.appendChild(tr);
-    
+
     const input = tr.querySelector('.item-input');
     const suggestBox = tr.querySelector('.suggestion-container');
 
@@ -130,7 +351,8 @@ function addRow() {
                 suggestBox.style.display = 'block';
                 matches.forEach(m => {
                     const div = document.createElement('div');
-                    div.className = 'suggestion-item'; div.innerText = m;
+                    div.className = 'suggestion-item';
+                    div.innerText = m;
                     div.onclick = function() { input.value = m; suggestBox.style.display = 'none'; calc(); };
                     suggestBox.appendChild(div);
                 });
@@ -148,17 +370,20 @@ function addRow() {
         }
     });
 
-    input.focus(); applyToggles(); calc();
+    input.focus();
+    applyToggles();
+    calc();
 }
 
 function reIndex() {
-    document.querySelectorAll("#items tr").forEach(function(row, idx) { 
-        row.cells[0].innerText = idx + 1; 
+    document.querySelectorAll("#items tr").forEach(function(row, idx) {
+        row.cells[0].innerText = idx + 1;
     });
 }
 
 function calc() {
     let subTotal = 0, discountTotal = 0;
+
     const discMaster = document.getElementById('disc-master');
     const isDiscountActive = discMaster ? discMaster.checked : false;
 
@@ -167,18 +392,20 @@ function calc() {
         const rate = parseFloat(row.querySelector(".r").value) || 0;
         const disc = isDiscountActive ? (parseFloat(row.querySelector(".d").value) || 0) : 0;
         const total = (qty * rate) - disc;
-        
-        row.querySelector(".rt").innerText = total.toFixed(2); 
-        subTotal += (qty * rate); 
+
+        row.querySelector(".rt").innerText = total.toFixed(2);
+        subTotal += (qty * rate);
         discountTotal += disc;
     });
-    
+
     document.getElementById("sub-val").innerText = subTotal.toFixed(2);
+
     const discAmtField = document.getElementById("disc-amt");
     if (discAmtField) {
         discAmtField.innerText = discountTotal.toFixed(2);
     }
 
+    // TAX LOGIC
     let taxAmount = 0;
     const taxMaster = document.getElementById('tax-master');
     const taxRateField = document.getElementById('tax-rate-field');
@@ -197,13 +424,15 @@ function calc() {
     const grandTotal = (subTotal - discountTotal) + taxAmount;
     document.getElementById("total-val").innerText = grandTotal.toFixed(2);
 
+    // PREVIOUS BALANCE
     const prevBalField = document.getElementById("prev-bal-val");
     const previousBalance = prevBalField ? (parseFloat(prevBalField.value) || 0) : 0;
 
+    // TOTAL PENDING BALANCE
     const paidInput = document.getElementById("paid");
     const paid = parseFloat(paidInput ? paidInput.value : 0) || 0;
     const balance = (grandTotal + previousBalance) - paid;
-    
+
     const balValField = document.getElementById("bal-val");
     if (balValField) {
         balValField.innerText = balance.toFixed(2);
@@ -216,7 +445,7 @@ function captureCustomerName() {
     if (custSpan && addrDiv) {
         const custName = custSpan.innerText.trim();
         const custAddr = addrDiv.innerText.trim();
-        if (custName && custName !== "" && custName !== "Counter Sale") {
+        if (custName && custName !== "" && custName !== "Counter Sale" && custName !== "کاؤنٹر سیل") {
             const existingIdx = savedCustomers.findIndex(c => c.name.toLowerCase() === custName.toLowerCase());
             if (existingIdx > -1) {
                 savedCustomers[existingIdx].address = custAddr;
@@ -228,6 +457,7 @@ function captureCustomerName() {
     }
 }
 
+// --- Bill Logging Logic with Paid/Balance ---
 function logBillToHistory() {
     const billNo = document.getElementById("bill-no").innerText.trim();
     const customer = document.getElementById("cust-name-field").innerText.trim();
@@ -248,14 +478,14 @@ function logBillToHistory() {
     });
 
     if(savedBillsLog.some(b => b.billNo === billNo && b.customer === customer && b.totalAmount === (currencySymbol + " " + totalAmount))) {
-        return; 
+        return;
     }
 
-    const newLog = { 
-        billNo, 
-        customer, 
-        dateVal, 
-        products, 
+    const newLog = {
+        billNo,
+        customer,
+        dateVal,
+        products,
         totalAmount: currencySymbol + " " + totalAmount,
         paidAmount: currencySymbol + " " + paidAmount.toFixed(2),
         balanceAmount: currencySymbol + " " + balanceAmount
@@ -276,6 +506,7 @@ function renderBillsHistory() {
     savedBillsLog.forEach(b => {
         const tr = document.createElement("tr");
         let prodHTML = b.products.map(p => `<span class="prod-tag">${p}</span>`).join(" ");
+
         const isPending = parseFloat(b.balanceAmount.replace(/[^0-9.-]/g, '')) > 0;
         const balStyle = isPending ? "font-weight:bold; color:red; text-align:right;" : "font-weight:bold; color:#777; text-align:right;";
 
@@ -310,21 +541,23 @@ function showPrintModal() {
     };
 }
 
-function showDevModal() { 
-    document.getElementById('devModal').style.display = 'block'; 
+function showDevModal() {
+    document.getElementById('devModal').style.display = 'block';
 }
 
+// --- Dynamic Auto Increment Logic ---
 function autoIncrementBillNo() {
     const billNoEl = document.getElementById("bill-no");
     let currentVal = billNoEl.innerText.trim();
-    
+
     const regex = /^(.*?)(\d+)$/;
     const match = currentVal.match(regex);
-    
+
     if (match) {
-        const prefix = match[1]; 
-        const number = parseInt(match[2], 10); 
+        const prefix = match[1];
+        const number = parseInt(match[2], 10);
         const newNumber = number + 1;
+
         const paddedNumber = match[2].length > 1 ? String(newNumber).padStart(match[2].length, '0') : newNumber;
         billNoEl.innerText = prefix + paddedNumber;
     } else {
@@ -339,20 +572,20 @@ function applyPrint() {
     autoIncrementBillNo();
     gtag("event", "bill_generated", { "event_category": "Engagement", "event_label": "Invoice Printed" });
 
-    const size = document.getElementById('pageSize').value; 
+    const size = document.getElementById('pageSize').value;
     const wrapper = document.getElementById("bill-content");
-    
-    if (size === "80mm") { wrapper.style.width = "80mm"; wrapper.style.margin = "0 auto"; } 
-    else if (size === "A5") { wrapper.style.width = "148mm"; wrapper.style.margin = "0 auto"; } 
+
+    if (size === "80mm") { wrapper.style.width = "80mm"; wrapper.style.margin = "0 auto"; }
+    else if (size === "A5") { wrapper.style.width = "148mm"; wrapper.style.margin = "0 auto"; }
     else if (size === "Legal") { wrapper.style.width = "216mm"; wrapper.style.margin = "0 auto"; }
-    else if (size === "custom") { wrapper.style.width = document.getElementById("custW").value + "mm"; wrapper.style.margin = "0 auto"; } 
+    else if (size === "custom") { wrapper.style.width = document.getElementById("custW").value + "mm"; wrapper.style.margin = "0 auto"; }
     else { wrapper.style.width = "100%"; wrapper.style.margin = "0"; }
-    
+
     document.getElementById("printModal").style.display = "none";
 
-    setTimeout(() => { 
-        window.print(); 
-        setTimeout(() => { wrapper.style.width = "100%"; wrapper.style.margin = "auto"; }, 1000); 
+    setTimeout(() => {
+        window.print();
+        setTimeout(() => { wrapper.style.width = "100%"; wrapper.style.margin = "auto"; }, 1000);
     }, 500);
 }
 
@@ -364,7 +597,7 @@ async function shareBill() {
 
     const billContent = document.getElementById('bill-content');
     const elementsToHide = document.querySelectorAll('.no-print, .rt-col-action, .editable-text-container, .editable-input-container');
-    
+
     billContent.classList.add('force-pc-layout');
 
     elementsToHide.forEach(el => {
@@ -407,7 +640,7 @@ async function downloadFile(formatType) {
 
     const billContent = document.getElementById('bill-content');
     const elementsToHide = document.querySelectorAll('.no-print, .rt-col-action, .editable-text-container, .editable-input-container');
-    
+
     billContent.classList.add('force-pc-layout');
 
     elementsToHide.forEach(el => {
@@ -428,7 +661,7 @@ async function downloadFile(formatType) {
             pdf.addImage(canvas.toDataURL('image/jpeg'), 'JPEG', 0, 0, 210, (canvas.height * 210) / canvas.width);
             pdf.save('Invoice.pdf');
         }
-        
+
         billContent.classList.remove('force-pc-layout');
         elementsToHide.forEach(el => {
             if (el.classList.contains('editable-text-container') || el.classList.contains('editable-input-container')) {
@@ -451,12 +684,11 @@ window.onclick = function(event) {
 }
 
 document.querySelectorAll('.toggle').forEach(t => t.addEventListener('change', applyToggles));
-document.getElementById('date-field').valueAsDate = new Date();
-document.getElementById('time-field').value = new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
 
 addRow();
 
 document.addEventListener("DOMContentLoaded", function() {
+    // 1. Bills History & Bill Number Load
     renderBillsHistory();
 
     const lastBill = localStorage.getItem("last_bill_no");
@@ -464,18 +696,22 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("bill-no").innerText = lastBill;
     }
 
+    // SAVED LANGUAGE APPLY (Refresh ke baad poora setup)
+    toggleDirection(currentLang);
+
+    // 2. Customer Suggestions Box Logic
     const custSpan = document.getElementById("cust-name-field");
     const addrDiv = document.getElementById("cust-address-field");
     if (custSpan && addrDiv) {
-        const wrap = custSpan.parentElement; 
+        const wrap = custSpan.parentElement;
         wrap.style.position = "relative";
-        
+
         const cSuggestBox = document.createElement("div");
         cSuggestBox.className = "suggestion-container";
-        cSuggestBox.style.position = "absolute"; 
-        cSuggestBox.style.top = "100%"; 
-        cSuggestBox.style.left = "0"; 
-        cSuggestBox.style.width = "200px"; 
+        cSuggestBox.style.position = "absolute";
+        cSuggestBox.style.top = "100%";
+        cSuggestBox.style.left = "0";
+        cSuggestBox.style.width = "200px";
         cSuggestBox.style.zIndex = "99999";
         wrap.appendChild(cSuggestBox);
 
@@ -488,17 +724,18 @@ document.addEventListener("DOMContentLoaded", function() {
                     cSuggestBox.style.display = 'block';
                     matches.forEach(m => {
                         const div = document.createElement('div');
-                        div.className = 'suggestion-item'; 
-                        div.innerText = m.name; 
+                        div.className = 'suggestion-item';
+                        div.innerText = m.name;
                         div.style.cursor = "pointer";
                         div.onclick = function() {
-                            custSpan.innerText = m.name; 
-                            addrDiv.innerText = m.address || "#"; 
+                            custSpan.innerText = m.name;
+                            addrDiv.innerText = m.address || "#";
                             cSuggestBox.style.display = 'none';
 
+                            // PREVIOUS BALANCE FETCH LOGIC FROM SAVED BILLS LOG
                             let foundPrevBal = 0;
                             const lastCustomerBill = savedBillsLog.find(b => b.customer.toLowerCase().trim() === m.name.toLowerCase().trim());
-                            
+
                             if (lastCustomerBill && lastCustomerBill.balanceAmount) {
                                 const cleanBal = lastCustomerBill.balanceAmount.replace(/[^0-9.-]/g, '');
                                 foundPrevBal = parseFloat(cleanBal) || 0;
@@ -511,11 +748,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
                             calc();
 
-                            const range = document.createRange(); 
+                            const range = document.createRange();
                             const sel = window.getSelection();
-                            range.selectNodeContents(custSpan); 
+                            range.selectNodeContents(custSpan);
                             range.collapse(false);
-                            sel.removeAllRanges(); 
+                            sel.removeAllRanges();
                             sel.addRange(range);
                         };
                         cSuggestBox.appendChild(div);
@@ -524,11 +761,12 @@ document.addEventListener("DOMContentLoaded", function() {
             } else { cSuggestBox.style.display = 'none'; }
         });
 
-        custSpan.addEventListener('blur', function() { 
-            setTimeout(() => { cSuggestBox.style.display = 'none'; }, 200); 
+        custSpan.addEventListener('blur', function() {
+            setTimeout(() => { cSuggestBox.style.display = 'none'; }, 200);
         });
     }
-    
+
+    // Page Size Logic
     const pageSizeElement = document.getElementById('pageSize');
     if (pageSizeElement) {
         pageSizeElement.addEventListener('change', function() {
@@ -537,24 +775,54 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    // 3. Invoice Notes Auto-Save (PER-LANGUAGE save)
     const noteBody = document.getElementById("note-body");
     if (noteBody) {
-        const savedNote = localStorage.getItem("custom_invoice_note");
-        if (savedNote !== null) {
-            noteBody.innerText = savedNote;
-        }
-
         noteBody.addEventListener("input", function () {
-            localStorage.setItem("custom_invoice_note", this.innerText);
-        });
-
-        noteBody.addEventListener("focus", function () {
-            if (this.innerText.trim() === "Thank you for your business!") {
-                document.execCommand('selectAll', false, null);
-            }
+            const key = (currentLang === 'rtl') ? "custom_invoice_note_ur" : "custom_invoice_note_en";
+            localStorage.setItem(key, this.innerText);
         });
     }
 
+    // 🆕 v74: 4. OWNER LABEL / OWNER NAME & NTN AUTO-SAVE
+    const ownerLabelEl = document.getElementById('owner-label');
+    if (ownerLabelEl) {
+        ownerLabelEl.addEventListener('input', function() {
+            // User jo bhi likhe (Owner/CEO/مالک/اونر) foran save
+            localStorage.setItem(getOwnerLabelKey(), this.innerText.trim());
+        });
+        ownerLabelEl.addEventListener('blur', function() {
+            let t = this.innerText.trim();
+            if (t === '') {
+                // Khali chhore to default wapas aa jaye
+                t = (currentLang === 'rtl') ? OWNER_DEFAULTS.ur : OWNER_DEFAULTS.en;
+                this.innerText = t;
+            }
+            localStorage.setItem(getOwnerLabelKey(), t);
+        });
+    }
+
+    const ownerNameEl = document.getElementById('owner-name-field');
+    if (ownerNameEl) {
+        ownerNameEl.addEventListener('input', function() {
+            localStorage.setItem('owner_name_value', this.innerText.trim());
+        });
+        ownerNameEl.addEventListener('blur', function() {
+            localStorage.setItem('owner_name_value', this.innerText.trim());
+        });
+    }
+
+    const ntnFieldEl = document.getElementById('ntn-field');
+    if (ntnFieldEl) {
+        ntnFieldEl.addEventListener('input', function() {
+            localStorage.setItem('ntn_value', this.innerText.trim());
+        });
+        ntnFieldEl.addEventListener('blur', function() {
+            localStorage.setItem('ntn_value', this.innerText.trim());
+        });
+    }
+
+    // 5. TAX & DISCOUNT LIVE CALCULATION LISTENERS
     const discMaster = document.getElementById('disc-master');
     if (discMaster) {
         discMaster.addEventListener('change', function() {
@@ -578,16 +846,18 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
+// --- Developer Info & Branding ---
 (function(){
     const devInfo = { name: "WasiDevelopers", whatsapp: "923346800959", displayPhone: "0334-6800959" };
     const contactDiv = document.getElementById('wasi-contact');
     const waLink = document.getElementById('modal-wa-link');
     const brandingArea = document.querySelector('.permanent-branding');
-    
+
     if (contactDiv && !contactDiv.innerHTML.includes('contenteditable')) {
-        contactDiv.innerHTML = 'Mobile: <div class="editable-text-container"><div contenteditable="true" style="display:inline-block; font-weight: normal; outline:none; min-width:100px; word-break:break-word; vertical-align:middle;">0300-8002765</div></div>';
+        const mobileText = (currentLang === 'rtl') ? 'موبائل:' : 'Mobile:';
+        contactDiv.innerHTML = `<span id="biz-mobile-label">${mobileText}</span> <div class="editable-text-container"><div contenteditable="true" style="display:inline-block; font-weight: normal; outline:none; min-width:100px; word-break:break-word; vertical-align:middle;">0334-6800959</div></div>`;
     }
-    
+
     const updateUI = () => {
         if (brandingArea && brandingArea.innerHTML !== 'https://freebills.netlify.app/') { brandingArea.innerHTML = 'https://freebills.netlify.app/'; }
         if(waLink) { waLink.setAttribute('href', "https://wa.me/" + devInfo.whatsapp); }
@@ -596,28 +866,29 @@ document.addEventListener("DOMContentLoaded", function() {
 })();
 
 // ==========================================
-// 🛡️ --- COMPLETE SECURITY & ANTI-TAMPER BLOCK ---
+// 🛡️ --- SECURITY & ANTI-TAMPER BLOCK ---
 // ==========================================
 
 // 1. 🚫 INSPECT ELEMENT & RIGHT CLICK BLOCKER
-document.addEventListener('contextmenu', event => event.preventDefault()); 
+document.addEventListener('contextmenu', event => event.preventDefault());
 
 document.onkeydown = function(e) {
-    if (e.keyCode == 123) return false;
+    if (e.keyCode == 123) return false; // F12
     if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
     if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
     if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
 };
 
-// 2. ⚠️ STRICT CODE INTEGRITY VERIFICATION
+// 2. ⚠️ CODE INTEGRITY VERIFICATION
 (function() {
-    // 🌟 Yahan apni verified length set karein
-    const CORRECT_HASH_SIGNATURE = 12494; 
+    const INTEGRITY_CHECK_ENABLED = false; // true = security check ON
+    const CORRECT_HASH_SIGNATURE = 13011;
 
     const enforceSecurityLock = () => {
+        if (!INTEGRITY_CHECK_ENABLED) return;
         try {
-            let currentStrippedSource = ''; 
-            
+            let currentStrippedSource = '';
+
             const safeFunctions = [];
             if (typeof calc !== 'undefined') safeFunctions.push(calc);
             if (typeof addRow !== 'undefined') safeFunctions.push(addRow);
@@ -629,6 +900,7 @@ document.onkeydown = function(e) {
             if (typeof shareBill !== 'undefined') safeFunctions.push(shareBill);
             if (typeof autoIncrementBillNo !== 'undefined') safeFunctions.push(autoIncrementBillNo);
             if (typeof captureCustomerName !== 'undefined') safeFunctions.push(captureCustomerName);
+            if (typeof gtag !== 'undefined') safeFunctions.push(gtag);
             if (typeof applyPrint !== 'undefined') safeFunctions.push(applyPrint);
             if (typeof showPrintModal !== 'undefined') safeFunctions.push(showPrintModal);
             if (typeof clearAllBillsHistory !== 'undefined') safeFunctions.push(clearAllBillsHistory);
@@ -636,32 +908,26 @@ document.onkeydown = function(e) {
             if (typeof showDevModal !== 'undefined') safeFunctions.push(showDevModal);
             if (typeof handleCurrencyChange !== 'undefined') safeFunctions.push(handleCurrencyChange);
             if (typeof updateCurrencySymbol !== 'undefined') safeFunctions.push(updateCurrencySymbol);
-            
-            safeFunctions.forEach(fn => { 
-                currentStrippedSource += fn.toString().replace(/\s+/g,''); 
+
+            safeFunctions.forEach(fn => {
+                currentStrippedSource += fn.toString().replace(/\s+/g,'');
             });
 
-      //      const currentLength = currentStrippedSource.length;
+            const currentLength = currentStrippedSource.length;
 
-            // Agar code tamper hua to Tamper screen + Error Code ke neche Yellow Length show ho gi
-     //       if (currentLength !== CORRECT_HASH_SIGNATURE) {
+            if (currentLength !== CORRECT_HASH_SIGNATURE) {
                 document.body.innerHTML = `
-                    <div style="position:fixed; top:0; left:0; width:100vw; height:100vh; background-color:#7f1d1d; color:#ffffff; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:sans-serif; padding:20px; text-align:center; box-sizing:border-box; z-index:999999;">
-                        <h1 style="font-size:36px; margin-bottom:15px;">⚠️ CODE TAMPERING DETECTED</h1>
-                        <p style="font-size:16px; max-width:600px; line-height:1.6; margin-bottom:20px; color:#e5e7eb;">
-                            Unauthorized modifications to the original source code or the developer's intellectual property have been detected. In accordance with our security policy, your access to this application has been permanently revoked.
+                    <div style="position:fixed; top:0; left:0; width:100vw; height:100vh; background-color:#7f1d1d; color:#ffffff; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:sans-serif; padding:20px; text-align:center; z-index:999999;">
+                        <h1 style="font-size:42px; margin-bottom:20px;">⚠️ CODE TAMPERING DETECTED</h1>
+                        <p style="font-size:18px; max-width:600px; line-height:1.6; margin-bottom:20px;">
+                            Unauthorized modifications to the original source code or the developer's intellectual property have been detected.
                         </p>
-                        <p style="font-size:15px; color:#f3f4f6; margin-bottom:25px;">
-                            Please contact <strong>Wasi Developers</strong> on WhatsApp to resolve this issue: 
+                        <p style="font-size:16px; color:#f3f4f6; margin-bottom:30px;">
+                            Please contact <strong>Wasi Developers</strong> on WhatsApp:
                             <a href="https://wa.me/923346800959" target="_blank" style="color:#22c55e; font-weight:bold; text-decoration:underline; margin-left:5px;">+923346800959</a>
                         </p>
-                        <div style="background:#000000; padding:12px 20px; border-radius:5px; font-family:monospace; font-size:14px; color:#ef4444; margin-bottom:15px;">
+                        <div style="background:#000; padding:15px; border-radius:5px; font-family:monospace; font-size:14px; color:#ef4444;">
                             Error Code: ERR_AUTH_INTEGRITY_VIOLATION
-                        </div>
-                        
-                        <!-- 🟡 Error Code ke neche Yellow colour mein Current Length -->
-                        <div style="background:rgba(0,0,0,0.6); padding:10px 20px; border-radius:5px; border:1px dashed #facc15; font-family:monospace; font-size:16px; font-weight:bold; color:#facc15;">
-                            ⚡ CURRENT TOTAL LENGTH: ${currentLength}
                         </div>
                     </div>
                 `;
@@ -670,6 +936,6 @@ document.onkeydown = function(e) {
             document.body.innerHTML = "Security system bypassed. Access Denied. Contact Wasi Developers at +923346800959.";
         }
     };
-    
-    setTimeout(enforceSecurityLock, 500); 
+
+    setTimeout(enforceSecurityLock, 0);
 })();
