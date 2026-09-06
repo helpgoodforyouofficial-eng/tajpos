@@ -1,28 +1,51 @@
 /* ============================================================
-   🔔 AUTOMATIC UPDATE POPUP SYSTEM (update.js)
+   🔔 BILINGUAL AUTOMATIC UPDATE POPUP SYSTEM (update.js)
+   - Dual Language Support (English / Urdu Toggle)
+   - Default Language: English
    - Max 3-time View Limit per Update Version
-   - Mobile & PC Fully Responsive with Scrollable Body
-   - Auto Reset on New Version
+   - Fully Responsive with Scrollable Body
    ============================================================ */
 
 (function initUpdateNotification() {
     // -----------------------------------------------------------
-    // 🛠️ 1. UPDATE CONFIGURATION (Yahan Apni Updates Likhain)
+    // 🛠️ 1. UPDATE CONFIGURATION (English & Urdu Content)
     // -----------------------------------------------------------
     const CURRENT_UPDATE = {
-        version: "1.0.2", // 👈 Jab bhi nai update aye, sirf is version number ko badal deen (e.g., 1.0.3)
-        title: "🎉 نئی اہم تبدیلیاں اور اپ ڈیٹس!",
-        date: "2026-09-06",
-        content: `
-            <p><strong>السلام علیکم!</strong> ہم نے ایپلیکیشن میں درج ذیل اہم بہتری کی ہے:</p>
-            <ul>
-                <li><strong>RTL/Urdu Alignment Fix:</strong> تصویر (JPG) سیو کرتے وقت اور WhatsApp پر شیئر کرتے وقت ٹیکسٹ اب بالکل دائیں (Right) طرف ہی رہے گا۔</li>
-                <li><strong>Print Layout Optimization:</strong> پرنٹ نکالتے وقت میٹا کالم (Date, Time, NTN) کے درمیانی فاصلے (Gaps) کو بالکل فکس کر دیا گیا ہے۔</li>
-                <li><strong>Meta Column Shift Control:</strong> NTN اور بل نمبر کے لیبلز اور ہندسوں کو اب آپ پکسل بائی پکسل ایڈجسٹ کر سکتے ہیں۔</li>
-                <li><strong>Performance Improvement:</strong> ایپلیکیشن کی سپیڈ کو تیز اور کیشے (Cache) کے مسائل کو فکس کیا گیا ہے۔</li>
-            </ul>
-            <p>اگر آپ کو کوئی مسئلہ درپیش ہو تو براؤزر کو ایک بار Hard Refresh (Ctrl + F5) لازمی کریں۔ شکریہ!</p>
-        `
+        version: "v80", // 👈 Nayi update par is version ko change karein
+        
+        // 🇬🇧 ENGLISH CONTENT (Default)
+        en: {
+            title: "🎉 New Updates & Improvements!",
+            okBtn: "Got it (OK)",
+            badgePrefix: "Notification:",
+            content: `
+                <p><strong>Hello!</strong> We have made several key updates to improve your experience:</p>
+                <ul>
+                    <li><strong>RTL/Urdu Alignment Fix:</strong> Text alignment during image download (JPG) and WhatsApp sharing now stays strictly on the right side.</li>
+                    <li><strong>Print Layout Optimization:</strong> Resolved gaps in the metadata column (Date, Time, NTN) during print mode.</li>
+                    <li><strong>Shift Control for Metadata:</strong> Precision pixel-by-pixel controls added for NTN and Bill No labels.</li>
+                    <li><strong>Performance Boost:</strong> Faster rendering speed and improved cache management.</li>
+                </ul>
+                <p>If you encounter any issues, please perform a Hard Refresh (Ctrl + F5). Thank you!</p>
+            `
+        },
+
+        // 🇵🇰 URDU CONTENT
+        ur: {
+            title: "🎉 نئی اہم تبدیلیاں اور اپ ڈیٹس!",
+            okBtn: "ٹھیک ہے (OK)",
+            badgePrefix: "نوٹیفکیشن:",
+            content: `
+                <p><strong>السلام علیکم!</strong> ہم نے ایپلیکیشن میں درج ذیل اہم بہتری کی ہے:</p>
+                <ul>
+                    <li><strong>RTL/Urdu Alignment Fix:</strong> تصویر (JPG) سیو کرتے وقت اور WhatsApp پر شیئر کرتے وقت ٹیکسٹ اب بالکل دائیں (Right) طرف ہی رہے گا۔</li>
+                    <li><strong>Print Layout Optimization:</strong> پرنٹ نکالتے وقت میٹا کالم (Date, Time, NTN) کے درمیانی فاصلے (Gaps) کو بالکل فکس کر دیا گیا ہے۔</li>
+                    <li><strong>Meta Column Shift Control:</strong> NTN اور بل نمبر کے لیبلز اور ہندسوں کو اب آپ پکسل بائی پکسل ایڈجسٹ کر سکتے ہیں۔</li>
+                    <li><strong>Performance Improvement:</strong> ایپلیکیشن کی سپیڈ کو تیز اور کیشے (Cache) کے مسائل کو فکس کیا گیا ہے۔</li>
+                </ul>
+                <p>اگر آپ کو کوئی مسئلہ درپیش ہو تو براؤزر کو ایک بار Hard Refresh (Ctrl + F5) لازمی کریں۔ شکریہ!</p>
+            `
+        }
     };
 
     // -----------------------------------------------------------
@@ -31,19 +54,19 @@
     const savedVersion = localStorage.getItem('app_last_update_version');
     let viewCount = parseInt(localStorage.getItem('app_update_view_count') || '0', 10);
 
-    // Agar Version Naya hai to Counter Reset karain
+    // Reset counter if version is new
     if (savedVersion !== CURRENT_UPDATE.version) {
         localStorage.setItem('app_last_update_version', CURRENT_UPDATE.version);
         viewCount = 0;
         localStorage.setItem('app_update_view_count', '0');
     }
 
-    // Agar 3 Bar Se Ziada Dekha Ja Chuka Hai To Stop Kar Deen
-    if (viewCount >= 3) {
+    // Stop if already viewed 3 times
+    if (viewCount >= 5) {
         return; 
     }
 
-    // Increment View Count for this session/open
+    // Increment count
     viewCount++;
     localStorage.setItem('app_update_view_count', viewCount.toString());
 
@@ -56,61 +79,72 @@
 })();
 
 function renderUpdateModal(data, currentCount) {
-    // Create CSS Injection dynamically for Popup
+    let currentLang = 'en'; // 👈 Default Language set to English
+
+    // Dynamic Style Injection
     const style = document.createElement('style');
+    style.id = 'update-modal-styles';
     style.innerHTML = `
         .update-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(4px);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(4px);
             display: flex; align-items: center; justify-content: center;
             z-index: 999999; padding: 15px; box-sizing: border-box;
             animation: fadeIn 0.3s ease-in-out;
         }
 
         .update-card {
-            background: #ffffff;
-            width: 100%; max-width: 520px;
-            max-height: 85vh; /* Mobile Screen Par Fit Ane Ke Liye */
-            border-radius: 16px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            display: flex; flex-direction: column;
-            overflow: hidden; direction: rtl;
-            font-family: system-ui, -apple-system, sans-serif;
-            position: relative;
+            background: #ffffff; width: 100%; max-width: 520px; max-height: 85vh;
+            border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            display: flex; flex-direction: column; overflow: hidden;
+            font-family: system-ui, -apple-system, sans-serif; position: relative;
+            transition: all 0.2s ease;
+        }
+
+        /* Language Toggle Bar */
+        .update-lang-bar {
+            background: #1a252f; padding: 8px 15px;
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .lang-btn {
+            background: transparent; border: 1px solid #5d6d7e; color: #abb2b9;
+            padding: 4px 16px; border-radius: 20px; font-size: 13px; font-weight: bold;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+
+        .lang-btn.active {
+            background: #3498db; color: #ffffff; border-color: #3498db;
+            box-shadow: 0 2px 6px rgba(52, 152, 219, 0.4);
         }
 
         .update-header {
-            padding: 16px 20px; background: #2c3e50; color: #ffffff;
+            padding: 14px 20px; background: #2c3e50; color: #ffffff;
             display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 2px solid #34495e;
         }
 
-        .update-header h3 { margin: 0; font-size: 18px; font-weight: 600; }
+        .update-header h3 { margin: 0; font-size: 17px; font-weight: 600; }
 
         .close-update-btn {
             background: rgba(255,255,255,0.15); border: none; color: #fff;
-            width: 32px; height: 32px; border-radius: 50%;
-            font-size: 16px; cursor: pointer; display: flex;
-            align-items: center; justify-content: center;
+            width: 30px; height: 30px; border-radius: 50%; font-size: 14px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
             transition: background 0.2s;
         }
         .close-update-btn:hover { background: #e74c3c; }
 
-        /* SCROLLABLE BODY CONTAINER */
         .update-body {
-            padding: 20px; overflow-y: auto; color: #333333;
-            font-size: 14px; line-height: 1.6; text-align: right;
-            flex-grow: 1; max-height: calc(85vh - 120px);
+            padding: 20px; overflow-y: auto; color: #333333; font-size: 14px;
+            line-height: 1.6; flex-grow: 1; max-height: calc(85vh - 150px);
         }
 
-        .update-body ul { padding-right: 20px; margin: 10px 0; }
+        .update-body ul { padding-left: 20px; margin: 10px 0; }
+        .update-card[dir="rtl"] .update-body ul { padding-left: 0; padding-right: 20px; }
         .update-body li { margin-bottom: 8px; }
 
         .update-footer {
-            padding: 12px 20px; background: #f8f9fa;
-            border-top: 1px solid #eeeeee;
+            padding: 12px 20px; background: #f8f9fa; border-top: 1px solid #eeeeee;
             display: flex; align-items: center; justify-content: space-between;
         }
 
@@ -133,26 +167,64 @@ function renderUpdateModal(data, currentCount) {
     `;
     document.head.appendChild(style);
 
-    // Modal HTML Structure
+    // HTML Structure
     const modalHtml = `
         <div class="update-overlay" id="updateOverlay">
-            <div class="update-card">
-                <div class="update-header">
-                    <h3>${data.title}</h3>
-                    <button class="close-update-btn" id="closeUpdateModal" title="بند کریں">❌</button>
+            <div class="update-card" id="updateCard" dir="ltr">
+                <div class="update-lang-bar">
+                    <button class="lang-btn active" id="btnLangEn">English</button>
+                    <button class="lang-btn" id="btnLangUr">اردو</button>
                 </div>
-                <div class="update-body">
-                    ${data.content}
+                <div class="update-header">
+                    <h3 id="updateTitle">${data.en.title}</h3>
+                    <button class="close-update-btn" id="closeUpdateModal" title="Close">❌</button>
+                </div>
+                <div class="update-body" id="updateContent">
+                    ${data.en.content}
                 </div>
                 <div class="update-footer">
-                    <span class="view-badge">نوٹیفکیشن: ${currentCount} / 3</span>
-                    <button class="btn-ok" id="btnOkUpdate">ٹھیک ہے (OK)</button>
+                    <span class="view-badge" id="updateBadge">${data.en.badgePrefix} ${currentCount} / 3</span>
+                    <button class="btn-ok" id="btnOkUpdate">${data.en.okBtn}</button>
                 </div>
             </div>
         </div>
     `;
 
     document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    // Elements
+    const card = document.getElementById('updateCard');
+    const title = document.getElementById('updateTitle');
+    const content = document.getElementById('updateContent');
+    const badge = document.getElementById('updateBadge');
+    const okBtn = document.getElementById('btnOkUpdate');
+    const btnEn = document.getElementById('btnLangEn');
+    const btnUr = document.getElementById('btnLangUr');
+
+    // Switch Language Function
+    const switchLanguage = (lang) => {
+        currentLang = lang;
+        const langData = data[lang];
+
+        if (lang === 'ur') {
+            card.setAttribute('dir', 'rtl');
+            btnUr.classList.add('active');
+            btnEn.classList.remove('active');
+        } else {
+            card.setAttribute('dir', 'ltr');
+            btnEn.classList.add('active');
+            btnUr.classList.remove('active');
+        }
+
+        title.innerHTML = langData.title;
+        content.innerHTML = langData.content;
+        badge.innerHTML = `${langData.badgePrefix} ${currentCount} / 5`;
+        okBtn.innerHTML = langData.okBtn;
+    };
+
+    // Event Listeners for Buttons
+    btnEn.addEventListener('click', () => switchLanguage('en'));
+    btnUr.addEventListener('click', () => switchLanguage('ur'));
 
     // Close Actions
     const closeModal = () => {
@@ -161,5 +233,5 @@ function renderUpdateModal(data, currentCount) {
     };
 
     document.getElementById('closeUpdateModal').addEventListener('click', closeModal);
-    document.getElementById('btnOkUpdate').addEventListener('click', closeModal);
+    okBtn.addEventListener('click', closeModal);
 }
