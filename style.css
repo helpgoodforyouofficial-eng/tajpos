@@ -1,345 +1,142 @@
-:root { 
-    --primary: #2c3e50; 
-    --bg: #f4f7f6; 
-    --accent: #27ae60; 
-    --share: #3498db; 
-    --print: #8e44ad; 
+:root { --primary: #2c3e50; --bg: #f4f7f6; --accent: #27ae60; --share: #3498db; --print: #8e44ad; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; padding: 5px; }
+
+.admin-panel {
+    max-width: 850px; margin: 0 auto 15px; background: #fff; padding: 15px;
+    border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--primary);
+}
+.config-grid { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
+.config-item { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: bold; }
+
+.bill-wrapper {
+    max-width: 800px; margin: auto; background: #fff; padding: 30px;
+    border: 1px solid #ddd; min-height: auto; position: relative;
+    overflow: visible; box-sizing: border-box;
 }
 
-body { 
-    font-family: 'Segoe UI', Arial, sans-serif; 
-    background: var(--bg); 
-    margin: 0; 
-    padding: 5px; 
-}
-
-.admin-panel { 
-    max-width: 850px; 
-    margin: 0 auto 15px; 
-    background: #fff; 
-    padding: 15px; 
-    border-radius: 12px; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
-    border-top: 5px solid var(--primary);
-}
-
-.config-grid { 
-    display: flex; 
-    flex-wrap: wrap; 
-    gap: 10px; 
-    align-items: center; 
-    border-bottom: 1px solid #eee; 
-    padding-bottom: 10px; 
-    margin-bottom: 10px; 
-}
-
-.config-item { 
-    display: flex; 
-    align-items: center; 
-    gap: 5px; 
-    font-size: 12px; 
-    font-weight: bold; 
-}
-
-.bill-wrapper { 
-    max-width: 800px; 
-    margin: auto; 
-    background: #fff; 
-    padding: 30px; 
-    border: 1px solid #ddd; 
-    min-height: auto; 
-    position: relative;
-    overflow: visible; 
-    box-sizing: border-box;
-}
-
-.header { 
-    display: flex; 
-    justify-content: space-between; 
-    border-bottom: 3px solid #333; 
-    padding-bottom: 15px; 
-    margin-bottom: 20px; 
-}
+.header { display: flex; justify-content: space-between; border-bottom: 3px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
 
 .title-normal { font-size: 22px; }
 .title-medium { font-size: 28px; }
 .title-large { font-size: 35px; }
+.biz-name { font-weight: bold; color: var(--primary); outline: none; word-break: break-word; }
 
-.biz-name { 
-    font-weight: bold; 
-    color: var(--primary); 
-    outline: none; 
-    word-break: break-word; 
+table { width: 100%; border-collapse: collapse; margin: 15px 0; border: 1px solid #333; font-size: 14px; }
+th { background: #f8f9fa; border: 1px solid #333; padding: 10px; font-size: 12px; }
+td { border: 1px solid #333; padding: 8px 5px; position: relative; vertical-align: middle; line-height: 1.4; }
+
+.delete-btn { color: red; background: none; border: none !important; cursor: pointer; font-weight: bold; font-size: 14px; }
+
+input, select {
+    border: none; width: 100%; outline: none; background: transparent;
+    font-size: 14px; padding: 0 2px 2px 2px;
+    height: 30px; line-height: 30px;
+    display: inline-block; vertical-align: middle;
 }
-
-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    margin: 15px 0; 
-    border: 1px solid #333; 
-    font-size: 14px; 
-}
-
-th { 
-    background: #f8f9fa; 
-    border: 1px solid #333; 
-    padding: 10px; 
-    font-size: 12px; 
-}
-
-td { 
-    border: 1px solid #333; 
-    padding: 8px 5px; 
-    position: relative; 
-    vertical-align: middle; 
-    line-height: 1.4; 
-}
-
-.delete-btn { 
-    color: red; 
-    background: none; 
-    border: none !important; 
-    cursor: pointer; 
-    font-weight: bold; 
-    font-size: 14px; 
-}
-
-input, select { 
-    border: none; 
-    width: 100%; 
-    outline: none; 
-    background: transparent; 
-    font-size: 14px; 
-    padding: 0 2px 2px 2px; 
-    height: 30px; 
-    line-height: 30px; 
-    display: inline-block; 
-    vertical-align: middle;
-}
-
 input:focus { background: #fffde7; }
 
 /* --- Pencil Icons Styling --- */
-.editable-text-container { 
-    position: relative; 
-    display: inline-flex; 
-    align-items: center; 
-    padding-right: 18px; 
+.editable-text-container { position: relative; display: inline-flex; align-items: center; padding-right: 18px; }
+.editable-text-container::after {
+    content: "✏️"; position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+    font-size: 11px; opacity: 0.6; pointer-events: none;
+    display: var(--show-pencil, block);
 }
-
-.editable-text-container::after { 
-    content: "✏️"; 
-    position: absolute; 
-    right: 0; 
-    top: 50%; 
-    transform: translateY(-50%); 
-    font-size: 11px; 
-    opacity: 0.6; 
-    pointer-events: none; 
+.editable-input-container { position: relative; display: block; width: 100%; }
+.editable-input-container::after {
+    content: "✏️"; position: absolute; right: 5px; top: 50%; transform: translateY(-50%);
+    font-size: 11px; opacity: 0.5; pointer-events: none;
     display: var(--show-pencil, block);
 }
 
-.editable-input-container { 
-    position: relative; 
-    display: block; 
-    width: 100%; 
-}
+.item-input { padding-right: 20px !important; box-sizing: border-box; }
 
-.editable-input-container::after { 
-    content: "✏️"; 
-    position: absolute; 
-    right: 5px; 
-    top: 50%; 
-    transform: translateY(-50%); 
-    font-size: 11px; 
-    opacity: 0.5; 
-    pointer-events: none; 
-    display: var(--show-pencil, block);
-}
-
-.item-input { 
-    padding-right: 20px !important; 
-    box-sizing: border-box; 
-}
-
-.suggestion-container { 
-    position: absolute; 
-    top: 100%; 
-    left: 0; 
-    width: 100%; 
-    background: white; 
-    border: 1px solid #ccc; 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
-    z-index: 9999; 
-    display: none; 
-    max-height: 150px; 
-    overflow-y: auto; 
-}
-
-.suggestion-item { 
-    padding: 8px 10px; 
-    cursor: pointer; 
-    border-bottom: 1px solid #eee; 
-    font-size: 13px; 
-    color: #333; 
-    text-align: left; 
-}
-
+.suggestion-container { position: absolute; top: 100%; left: 0; width: 100%; background: white; border: 1px solid #ccc; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 9999; display: none; max-height: 150px; overflow-y: auto; }
+.suggestion-item { padding: 8px 10px; cursor: pointer; border-bottom: 1px solid #eee; font-size: 13px; color: #333; text-align: left; }
 .suggestion-item:hover { background: #f0f0f0; }
 
-.action-buttons { 
-    max-width: 800px; 
-    margin: 20px auto; 
-    display: grid; 
-    grid-template-columns: 1fr 1fr; 
-    gap: 8px; 
-}
-
-.btn { 
-    padding: 12px 5px; 
-    border: none; 
-    border-radius: 6px; 
-    cursor: pointer; 
-    font-weight: bold; 
-    color: white; 
-    text-align: center; 
-    font-size: 12px; 
-}
-
+.action-buttons { max-width: 800px; margin: 20px auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.btn { padding: 12px 5px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; text-align: center; font-size: 12px; }
 .btn-pdf { background: #e74c3c; }
 .btn-jpg { background: var(--accent); }
 .btn-share { background: var(--share); }
 .btn-print { background: var(--print); }
-.btn-add { 
-    background: var(--primary); 
-    color: white; 
-    margin-top: 10px; 
-    padding: 10px 15px; 
-    border-radius: 4px; 
-    border: none; 
-    cursor: pointer; 
-    width: 100%; 
-}
+.btn-add { background: var(--primary); color: white; margin-top: 10px; padding: 10px 15px; border-radius: 4px; border: none; cursor: pointer; width: 100%; }
 
-.summary-box { 
-    display: flex; 
-    justify-content: flex-end; 
-    margin-top: 15px; 
-    padding-bottom: 20px; 
-}
+.summary-box { display: flex; justify-content: flex-end; margin-top: 15px; padding-bottom: 20px; }
+.sum-table { width: 100%; max-width: 300px; border: none; }
+.sum-table td { border: none !important; padding: 6px 10px; text-align: right; white-space: nowrap; line-height: 1.5; }
 
-.sum-table { 
-    width: 100%; 
-    max-width: 300px; 
-    border: none; 
-}
-
-.sum-table td { 
-    border: none !important; 
-    padding: 6px 10px; 
-    text-align: right; 
-    white-space: nowrap; 
-    line-height: 1.5; 
-}
-
-.footer-area { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: flex-end; 
-    margin-top: 40px; 
-    flex-wrap: wrap; 
-    gap: 20px; 
-    padding-bottom: 20px; 
-}
-
+.footer-area { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; flex-wrap: wrap; gap: 20px; padding-bottom: 20px; }
 #qrcode { margin-bottom: 5px; }
+.permanent-branding { font-size: 10px; color: #555; text-align: left; margin-top: 5px; font-weight: bold; }
 
-.permanent-branding { 
-    font-size: 10px; 
-    color: #555; 
-    text-align: left; 
-    margin-top: 5px; 
-    font-weight: bold; 
-}
-
-.modal { 
-    display: none; 
-    position: fixed; 
-    z-index: 10000; 
-    left: 0; 
-    top: 0; 
-    width: 100%; 
-    height: 100%; 
-    background: rgba(0,0,0,0.5); 
-}
-
-.modal-content { 
-    background: #fff; 
-    margin: 15% auto; 
-    padding: 20px; 
-    border-radius: 10px; 
-    width: 90%; 
-    max-width: 400px; 
-}
+.modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+.modal-content { background: #fff; margin: 15% auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; }
 
 /* --- Record Section Styling --- */
-.record-panel { 
-    max-width: 800px; 
-    margin: 30px auto; 
-    background: #fff; 
-    padding: 20px; 
-    border-radius: 12px; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
-    border-top: 5px solid var(--share); 
-}
+.record-panel { max-width: 800px; margin: 30px auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--share); }
+.record-table { font-size: 13px; margin-top: 10px; }
+.record-table th { background: #2c3e50; color: white; border: 1px solid #ddd; }
+.record-table td { border: 1px solid #ddd; padding: 6px; text-align: left; vertical-align: middle; }
+.prod-tag { display: inline-block; background: #eef2f3; color: #333; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin: 2px; border: 1px solid #ccc; }
 
-.record-table { 
-    font-size: 13px; 
-    margin-top: 10px; 
-}
-
-.record-table th { 
-    background: #2c3e50; 
-    color: white; 
-    border: 1px solid #ddd; 
-}
-
-.record-table td { 
-    border: 1px solid #ddd; 
-    padding: 6px; 
-    text-align: left; 
-    vertical-align: middle; 
-}
-
-.prod-tag { 
-    display: inline-block; 
-    background: #eef2f3; 
-    color: #333; 
-    padding: 2px 6px; 
-    border-radius: 4px; 
-    font-size: 11px; 
-    margin: 2px; 
-    border: 1px solid #ccc; 
-}
-
+/* Forces desktop style inside snapshot/PC rendering */
 .force-pc-layout {
     width: 800px !important;
     max-width: 800px !important;
     padding: 30px !important;
 }
-
 .force-pc-layout .header { flex-direction: row !important; text-align: left !important; gap: 0 !important; }
 .force-pc-layout .header div { text-align: left !important; }
 .force-pc-layout .header div:last-child { text-align: right !important; }
+
+/* Bill No Row — compact (label aur number ke beech koi faltu gap nahi) */
+.bill-no-row { display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+
+/* ===== RTL (Urdu) HEADER ALIGNMENT FIX ===== */
+/* Business info lines (پتہ، موبائل، اونر) right column mein with thori si right space */
+[dir="rtl"] #biz-address-wrap,
+[dir="rtl"] #wasi-contact,
+[dir="rtl"] .owner-wrap {
+    text-align: right !important;
+    padding-right: 5px;
+}
+[dir="rtl"] #biz-address-wrap *,
+[dir="rtl"] #wasi-contact *,
+[dir="rtl"] .owner-wrap * {
+    text-align: right !important;
+}
+[dir="rtl"] .customer-info-wrap {
+    padding-right: 5px;
+}
+
+/* 🆕 v75.2: OWNER LINE — PRINT/JPG/PDF FIX */
+.bill-wrapper[dir="rtl"] .header > div:first-child,
+.bill-wrapper[dir="rtl"] .header > div:first-child * {
+    text-align: right !important;
+}
+/* Owner label/name right edge se chipke — pencil left side par shift (RTL me) */
+.bill-wrapper[dir="rtl"] .owner-wrap .editable-text-container {
+    padding-right: 0 !important;
+    padding-left: 18px;
+}
+.bill-wrapper[dir="rtl"] .owner-wrap .editable-text-container::after {
+    right: auto !important;
+    left: 0 !important;
+}
 
 @media (max-width: 600px) {
     .header { flex-direction: column; text-align: left; gap: 15px; }
     .header div { text-align: left !important; }
     .header > div:last-child, .header > div:last-child * { text-align: right !important; justify-content: flex-end !important; align-items: flex-end !important; }
+    .header > div:last-child .bill-no-row { align-items: center !important; gap: 4px !important; }
+    .header > div:last-child .bill-no-row * { align-items: center !important; }
     .customer-info-wrap, .customer-info-wrap * { text-align: left !important; justify-content: flex-start !important; }
+    [dir="rtl"] .customer-info-wrap, [dir="rtl"] .customer-info-wrap * { text-align: right !important; justify-content: flex-start !important; }
     .action-buttons { grid-template-columns: 1fr; }
     .bill-wrapper { padding: 15px; }
-    input { font-size: 13px; } 
+    input { font-size: 13px; }
 }
 
 /* --- Print Control Layout --- */
@@ -354,4 +151,369 @@ input:focus { background: #fffde7; }
     .editable-text-container::after, .editable-input-container::after { display: none !important; }
     .editable-text-container { padding-right: 0 !important; }
     @page { margin: 0.5cm; }
+}
+
+/* ============================================
+   🆕 v76 (Fixed): META COLUMN — Date/Time/NTN/Bill No
+   ek aligned column mein (English + Urdu same layout)
+   ============================================ */
+
+/* Main row setup - Flex with precise alignment */
+.meta-row { 
+    display: flex; 
+    align-items: center; 
+    justify-content: flex-end; 
+    gap: 9px; 
+    margin: 2px 0; 
+}
+
+.meta-label {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Value Box - Fixed width removed to prevent forced gaps & overlapping */
+.meta-value { 
+    min-width: 110px; 
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Text alignment consistently to right for clean grid look */
+.meta-row .meta-value,
+.meta-row .meta-value *,
+.force-pc-layout .meta-row .meta-value,
+.force-pc-layout .meta-row .meta-value * { 
+    text-align: right !important; 
+}
+
+/* Fix for Editable Text Container Pencil Icons */
+.meta-row .editable-text-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+/* RTL (Urdu): Keep layout structure intact without breaking text alignment */
+.bill-wrapper[dir="rtl"] .meta-row {
+    justify-content: flex-end;
+}
+
+.bill-wrapper[dir="rtl"] .meta-row .meta-value,
+.bill-wrapper[dir="rtl"] .meta-row .meta-value * { 
+    text-align: right !important; 
+}
+
+.bill-wrapper[dir="rtl"] .meta-row .editable-text-container {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+}
+
+/* Mobile par bhi column alignment */
+@media (max-width: 600px) {
+    .header > div:last-child .meta-row { 
+        align-items: center !important; 
+        justify-content: flex-end !important; 
+    }
+}
+
+/* Print/JPG/PDF Alignment */
+@media print {
+    .bill-wrapper .meta-row .meta-value,
+    .bill-wrapper .meta-row .meta-value *,
+    .bill-wrapper[dir="rtl"] .meta-row .meta-value,
+    .bill-wrapper[dir="rtl"] .meta-row .meta-value * { 
+        text-align: right !important; 
+    }
+    .bill-wrapper[dir="rtl"] .meta-row .editable-text-container { 
+        padding-left: 0 !important; 
+        padding-right: 0 !important;
+    }
+}
+
+/* 🆕 ENGLISH: Bill No label thora right shift */
+.bill-no-row .meta-label {
+    position: relative;
+    left: 20px;   /* 👈 Number barhao = label AUR RIGHT jayega */
+}
+
+/* 🇵🇰 URDU: Urdu mein koi tabdeeli nahi (waise hi rahe) */
+.bill-wrapper[dir="rtl"] .bill-no-row .meta-label {
+    left: 0;
+}
+
+/* ============================================
+   🆕 BILL NO CONTROL (Final) — English default,
+   Urdu override. dir attribute ki zaroorat nahi.
+   ============================================ */
+
+/* 🇬🇧 ENGLISH / DEFAULT (har halat mein lagega) */
+.bill-no-row .editable-text-container {
+    padding-right: 40px !important;   /* 👈 English: NUMBER position */
+}
+.bill-no-row .editable-text-container::after {
+    right: 0px;                        /* 👈 English: PENCIL position */
+}
+
+/* 🇵🇰 URDU OVERRIDE (zyada powerful — Urdu mein is ko jeet jayega) */
+.bill-wrapper[dir="rtl"] .bill-no-row .editable-text-container {
+    padding-right: 0 !important;
+    padding-left: 10px !important;    /* 👈 Urdu: NUMBER position */
+}
+.bill-wrapper[dir="rtl"] .bill-no-row .editable-text-container::after {
+    right: auto !important;
+    left: 0px;                         /* 👈 Urdu: PENCIL position */
+}
+/* ============================================
+   🇵🇰 RTL & PRINT FIX: Items Details Alignment
+   Save Image / WhatsApp & Print Alignment Lock
+   ============================================ */
+
+/* 1. Normal Screen RTL Table Alignment */
+.bill-wrapper[dir="rtl"] table,
+.bill-wrapper[dir="rtl"] th,
+.bill-wrapper[dir="rtl"] td {
+    direction: rtl !important;
+}
+
+/* Items Description Column Specific Alignment */
+.bill-wrapper[dir="rtl"] td.item-desc,
+.bill-wrapper[dir="rtl"] td.description,
+.bill-wrapper[dir="rtl"] td:nth-child(2), /* Agar 2nd column description hai */
+.bill-wrapper[dir="rtl"] .item-name-input,
+.bill-wrapper[dir="rtl"] [contenteditable="true"] {
+    text-align: right !important;
+    direction: rtl !important;
+}
+
+/* 2. PRINT / HTML2CANVAS (Save Image & WhatsApp) FORCED RTL LOCK */
+@media print {
+    /* Print alignment for Customer Info */
+    .bill-wrapper:not([dir="rtl"]) .customer-info-wrap,
+    .bill-wrapper:not([dir="rtl"]) .customer-info-wrap * {
+        text-align: left !important;
+        justify-content: flex-start !important;
+        float: none !important;
+    }
+
+    .bill-wrapper:not([dir="rtl"]) .customer-info-wrap .editable-text-container,
+    .bill-wrapper:not([dir="rtl"]) .customer-info-wrap [contenteditable="true"] {
+        display: inline-block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: left !important;
+    }
+
+    .bill-wrapper[dir="rtl"] .customer-info-wrap,
+    .bill-wrapper[dir="rtl"] .customer-info-wrap * {
+        text-align: right !important;
+        justify-content: flex-end !important;
+    }
+
+    /* 🎯 Items Details Table Print & Image Lock */
+    .bill-wrapper[dir="rtl"] table th,
+    .bill-wrapper[dir="rtl"] table td,
+    .bill-wrapper[dir="rtl"] table td * {
+        direction: rtl !important;
+    }
+
+    /* Description / Tafseel column Right Alignment Force */
+    .bill-wrapper[dir="rtl"] table td:nth-child(2),
+    .bill-wrapper[dir="rtl"] .item-desc,
+    .bill-wrapper[dir="rtl"] .item-name {
+        text-align: right !important;
+        justify-content: flex-start !important; /* RTL flex adjustment */
+    }
+}
+
+/* 3. HTML2CANVAS Canvas Image Capture Class Override (WhatsApp / JPG Fix) */
+.rendering-canvas .bill-wrapper[dir="rtl"] td,
+.rendering-canvas .bill-wrapper[dir="rtl"] .item-desc,
+.rendering-canvas .bill-wrapper[dir="rtl"] [contenteditable="true"] {
+    text-align: right !important;
+    direction: rtl !important;
+}
+
+
+/* ============================================================
+   👑 ULTIMATE RTL PRINT & SAVE IMAGE FIX: Items Description Alignment
+   ============================================================ */
+
+/* 1. Normal Screen Table Cells & Inputs Strict Right Alignment */
+.bill-wrapper[dir="rtl"] table td,
+.bill-wrapper[dir="rtl"] table th,
+.bill-wrapper[dir="rtl"] table input,
+.bill-wrapper[dir="rtl"] table [contenteditable="true"],
+.bill-wrapper[dir="rtl"] .item-desc,
+.bill-wrapper[dir="rtl"] .item-name {
+    direction: rtl !important;
+    text-align: right !important;
+    unicode-bidi: isolate !important;
+}
+
+/* 2. PRINT / HTML2CANVAS (Save Image & WhatsApp Download Fix) */
+@media print {
+    /* Main Table Container Direction Force */
+    .bill-wrapper[dir="rtl"] table,
+    .bill-wrapper[dir="rtl"] tbody,
+    .bill-wrapper[dir="rtl"] tr {
+        direction: rtl !important;
+    }
+
+    /* All Table Cells Force Right Align */
+    .bill-wrapper[dir="rtl"] table td,
+    .bill-wrapper[dir="rtl"] table th,
+    .bill-wrapper[dir="rtl"] table td *,
+    .bill-wrapper[dir="rtl"] table th * {
+        direction: rtl !important;
+        text-align: right !important;
+        float: none !important;
+    }
+
+    /* Items Details Column (Tafseel Saman) Specific Strict Pinning */
+    .bill-wrapper[dir="rtl"] table td:nth-child(2),
+    .bill-wrapper[dir="rtl"] table td:nth-child(4) { /* Agar tafseel 2nd ya 4th column ho */
+        text-align: right !important;
+        direction: rtl !important;
+        padding-right: 8px !important;
+    }
+}
+
+/* 3. HTML2CANVAS Temporary Render Engine Fix (Direct Override) */
+div[class*="html2canvas"] .bill-wrapper[dir="rtl"] td,
+div[class*="html2canvas"] .bill-wrapper[dir="rtl"] input,
+div[class*="html2canvas"] .bill-wrapper[dir="rtl"] [contenteditable] {
+    text-align: right !important;
+    direction: rtl !important;
+}
+
+
+/* ============================================================
+   👑 MASTER RTL FIX: Date, Time, NTN & Bill No Alignment
+   Har ek element ka alag control mojud hai
+   ============================================================ */
+
+/* 1. MAIN ROW CONTAINER (Charo Rows Ka Main Structure) */
+.bill-wrapper[dir="rtl"] .meta-row:not([style*="display: none"]):not(.hidden):not([hidden]),
+.bill-wrapper[dir="rtl"] .date-wrap:not([style*="display: none"]):not(.hidden):not([hidden]),
+.bill-wrapper[dir="rtl"] .time-wrap:not([style*="display: none"]):not(.hidden):not([hidden]),
+.bill-wrapper[dir="rtl"] .ntn-wrap:not([style*="display: none"]):not(.hidden):not([hidden]),
+.bill-wrapper[dir="rtl"] .bill-no-row:not([style*="display: none"]):not(.hidden):not([hidden]) {
+    display: flex !important;
+    flex-direction: row !important;      /* Label Right, Value Left */
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 8px !important;                 /* 👈 Label aur Value ke beech ka gap */
+    margin: 4px 0 !important;            /* 👈 Rows ke beech ka vertical gap */
+}
+
+/* Clear Force Hide for Unchecked States */
+.bill-wrapper[dir="rtl"] .ntn-wrap[style*="display: none"],
+.bill-wrapper[dir="rtl"] .ntn-wrap.hidden,
+.bill-wrapper[dir="rtl"] .ntn-wrap[hidden] {
+    display: none !important;
+}
+
+
+/* 2. LABELS (تاریخ: ، وقت: ، NTN: ، بل نمبر:) */
+.bill-wrapper[dir="rtl"] .meta-label,
+.bill-wrapper[dir="rtl"] .date-wrap .meta-label,
+.bill-wrapper[dir="rtl"] .time-wrap .meta-label,
+.bill-wrapper[dir="rtl"] .ntn-wrap .meta-label,
+.bill-wrapper[dir="rtl"] .bill-no-row .meta-label {
+    text-align: right !important;
+    font-weight: bold !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+    position: static !important;
+}
+
+/* 3. VALUE CONTAINERS (Numbers / Dates / Inputs Box) */
+.bill-wrapper[dir="rtl"] .meta-value,
+.bill-wrapper[dir="rtl"] .date-wrap .meta-value,
+.bill-wrapper[dir="rtl"] .time-wrap .meta-value,
+.bill-wrapper[dir="rtl"] .ntn-wrap .meta-value,
+.bill-wrapper[dir="rtl"] .bill-no-row .meta-value {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    width: auto !important;
+}
+
+/* 4. EDITABLE TEXT CONTAINERS (Pencil Holder Box) */
+.bill-wrapper[dir="rtl"] .editable-text-container {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    padding-right: 0 !important;
+    padding-left: 20px !important;        /* 👈 Pencil ke liye space (Left side par) */
+    margin: 0 !important;
+}
+
+/* 5. PENCIL ICONS (✏️) — Sub Par Bilkul Ek Jaisi Side Pinning */
+.bill-wrapper[dir="rtl"] .editable-text-container::after {
+    position: absolute !important;
+    left: 0 !important;                  /* 👈 Pencil Left edge par pin */
+    right: auto !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin: 0 !important;
+    font-size: 11px !important;
+    opacity: 0.7 !important;
+}
+
+/* 6. INPUT FIELDS CONTROL (Date & Time Inputs) */
+.bill-wrapper[dir="rtl"] #date-field,
+.bill-wrapper[dir="rtl"] #time-field {
+    text-align: right !important;
+    direction: ltr !important;            /* Numbers/Dates hamesha seedhay rahain */
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    padding: 0 4px !important;
+    font-size: 14px !important;
+}
+
+/* 7. TEXT & NUMBERS (NTN & Bill No) */
+.bill-wrapper[dir="rtl"] #ntn-field,
+.bill-wrapper[dir="rtl"] #bill-no {
+    text-align: right !important;
+    display: inline-block !important;
+    width: auto !important;
+    outline: none !important;
+    padding: 0 40px !important;
+    font-weight: bold !important;
+}
+
+/* 8. INDIVIDUAL ADJUSTMENTS (Aap Apni Marzi Se Change Kar Sakte Hain) */
+
+/* NTN Specific Control */
+.bill-wrapper[dir="rtl"] .ntn-wrap .editable-text-container {
+    padding-right: 0px !important;
+}
+
+/* 🎯 NTN Label Direct Shift Fix */
+.bill-wrapper[dir="rtl"] .ntn-wrap .meta-label {
+    position: relative !important;
+    left: -50px !important; /* 👈 Negative value e.g. -10px (Left), Positive value e.g. 10px (Right) */
+}
+
+/* 🎯 NTN Value / Numbers Direct Shift Fix */
+.bill-wrapper[dir="rtl"] .ntn-wrap #ntn-field {
+    position: relative !important;
+    left: -10px !important; /* 👈 Negative value e.g. -10px (Left), Positive value e.g. 10px (Right) */
+}
+
+/* Bill No Specific Control */
+.bill-wrapper[dir="rtl"] .bill-no-row .editable-text-container {
+    padding-left: 10px !important;
+}
+
+/* 🎯 Bill No Label Direct Left Shift Fix */
+.bill-wrapper[dir="rtl"] .bill-no-row .meta-label {
+    position: relative !important;
+    left: -30px !important; /* 👈 Is number ko -10px, -20px kar ke label ko jitna chahein left kar sakte hain */
 }
