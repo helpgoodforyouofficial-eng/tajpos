@@ -287,7 +287,7 @@ function toggleDirection(dir) {
     if (disclaimer) {
         disclaimer.innerHTML = isUrdu
             ? "یہ مرشد ٹریڈرز کا ای-بل قانونی حیثیت نہیں رکھتا۔ <br>کسی عدالت میں پیش نہیں کیا جا سکتا۔"
-            : "This Murshid Traders E-Bill: Not legally binding. <br>Cannot be challenged in any court.";
+            : "This Free Bills E-Bill: Not legally binding. <br>Cannot be challenged in any court.";
     }
 
     // Language change par bhi Date & Time fresh set
